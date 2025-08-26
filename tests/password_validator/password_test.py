@@ -23,3 +23,12 @@ class PasswordShould(unittest.TestCase):
                 self.fail("A failure was expected")
             case Failure(errors):
                 self.assertListEqual(["Password must be at least 8 characters long"], errors)
+
+    def test_require_at_least_an_uppercase_letter(self):
+        maybe_password: Result[Password, list[str]] = Password.of("cul4soo!")
+
+        match maybe_password:
+            case Success(_):
+                self.fail("A failure was expected")
+            case Failure(errors):
+                self.assertListEqual(["Password must contain at least one uppercase letter"], errors)
