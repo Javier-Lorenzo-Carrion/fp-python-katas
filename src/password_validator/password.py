@@ -12,10 +12,14 @@ class Password:
 
     @classmethod
     def of(cls, password: str) -> Result["Password", list[str]]:
+        errors = []
         if len(password) < 8:
-            return Failure(["Password must be at least 8 characters long"])
+            errors.append("Password must be at least 8 characters long")
         if not any(char.isupper() for char in password):
-            return Failure(["Password must contain at least one uppercase letter"])
+            errors.append("Password must contain at least one uppercase letter")
+
+        if errors:
+            return Failure(errors)
 
         return Success(Password(password))
 
