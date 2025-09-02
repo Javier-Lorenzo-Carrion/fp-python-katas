@@ -32,3 +32,30 @@ class PasswordShould(unittest.TestCase):
                 self.fail("A failure was expected but got a success")
             case Failure(errors):
                 self.assertListEqual(["Password must contain at least one uppercase letter"], errors)
+
+    def test_require_at_least_an_lowercase_letter(self):
+        maybe_password = Password.of("CUL4SOO!")
+
+        match maybe_password:
+            case Success(_):
+                self.fail("A failure was expected but got a success")
+            case Failure(errors):
+                self.assertListEqual(["Password must contain at least one lowercase letter"], errors)
+
+    def test_require_at_least_one_digit(self):
+        maybe_password = Password.of("Culasoo!")
+
+        match maybe_password:
+            case Success(_):
+                self.fail("A failure was expected but got a success")
+            case Failure(errors):
+                self.assertListEqual(["Password must contain at least one digit"], errors)
+
+    def test_require_at_least_a_special_character(self):
+        maybe_password = Password.of("Cul4sooo")
+
+        match maybe_password:
+            case Success(_):
+                self.fail("A failure was expected but got a success")
+            case Failure(errors):
+                self.assertListEqual(["Password must contain at least one special character"], errors)
