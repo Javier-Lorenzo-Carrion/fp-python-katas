@@ -1,6 +1,6 @@
 import unittest
 
-from returns.result import Success, Failure, Result
+from returns.result import Success, Failure
 
 from password_validator.password import Password
 
