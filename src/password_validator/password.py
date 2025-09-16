@@ -3,7 +3,8 @@ from dataclasses import dataclass
 from returns.result import Result, Failure, Success
 import re
 
-from unicodedata import normalize
+from password_validator.password_rules import MinimumLengthPasswordRule, UppercaseLetterPasswordRule, \
+    LowercaseLetterPasswordRule, DigitPasswordRule, SpecialCharacterPasswordRule, PasswordRule
 
 
 @dataclass
@@ -14,12 +15,23 @@ class Password:
         self._value = value
 
     @classmethod
-    def of(cls, password: str) -> Result["Password", list[str]]:
-        maybe_errors = [cls.ensure_minimum_length(8, password),
-                        cls.ensure_at_least_one_uppercase_letter(password),
-                        cls.ensure_at_least_one_lowercase_letter(password),
-                        cls.ensure_at_least_one_digit(password),
-                        cls.ensure_at_least_one_special_character(password)]
+    def of(cls, password: str, rules: list[PasswordRule] = None) -> Result["Password", list[str]]:
+        """
+        Factory method to create a Password instance after validating it against the provided rules.
+        If no rules are provided, a default set of common password rules will be applied.
+        :param password: The password string to validate and encapsulate.
+        :param rules: Optional list of PasswordRule instances to validate the password against. If None, default rules will be used.
+        :return: Result containing either a valid Password instance or a list of error messages.
+        """
+        if rules is None:
+            rules = [
+                MinimumLengthPasswordRule(8),
+                UppercaseLetterPasswordRule(),
+                LowercaseLetterPasswordRule(),
+                DigitPasswordRule(),
+                SpecialCharacterPasswordRule()
+            ]
+        maybe_errors = [rule.ensure(password) for rule in rules]
 
         errors: list[str] = list(filter(lambda error: error is not None, maybe_errors))
 
