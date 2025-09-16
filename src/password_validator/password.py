@@ -15,17 +15,11 @@ class Password:
 
     @classmethod
     def of(cls, password: str) -> Result["Password", list[str]]:
-        maybe_errors = []
-
-        maybe_errors.append(cls.ensure_minimum_length(8, password))
-        if not any(char.isupper() for char in password):
-            maybe_errors.append("Password must contain at least one uppercase letter")
-        if not any(char.islower() for char in password):
-            maybe_errors.append("Password must contain at least one lowercase letter")
-        if not any(char.isdigit() for char in password):
-            maybe_errors.append("Password must contain at least one digit")
-        if not re.findall(r'[!*_$&\-;,]+', password):
-            maybe_errors.append("Password must contain at least one special character")
+        maybe_errors = [cls.ensure_minimum_length(8, password),
+                        cls.ensure_at_least_one_uppercase_letter(password),
+                        cls.ensure_at_least_one_lowercase_letter(password),
+                        cls.ensure_at_least_one_digit(password),
+                        cls.ensure_at_least_one_special_character(password)]
 
         errors: list[str] = list(filter(lambda error: error is not None, maybe_errors))
 
@@ -43,3 +37,26 @@ class Password:
             return f"Password must be at least {length} characters long"
         return None
 
+    @classmethod
+    def ensure_at_least_one_uppercase_letter(cls, password: str) -> str | None:
+        if password.lower() == password:
+            return "Password must contain at least one uppercase letter"
+        return None
+
+    @classmethod
+    def ensure_at_least_one_lowercase_letter(cls, password: str) -> str | None:
+        if password.upper() == password:
+            return "Password must contain at least one lowercase letter"
+        return None
+
+    @classmethod
+    def ensure_at_least_one_digit(cls, password: str) -> str | None:
+        if not any(char.isdigit() for char in password):
+            return "Password must contain at least one digit"
+        return None
+
+    @classmethod
+    def ensure_at_least_one_special_character(cls, password: str) -> str | None:
+        if not re.findall(r'[!*_$&\-;,]+', password):
+            return "Password must contain at least one special character"
+        return None
